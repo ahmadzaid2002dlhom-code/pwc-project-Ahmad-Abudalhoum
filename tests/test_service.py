@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from app.database import Base, list_contracts
-from app.schemas import LLMExtractionCandidate
+from app.schemas import ContractResponse, LLMExtractionCandidate
 from app.service import ContractService
 
 
@@ -40,7 +40,8 @@ def test_process_contract_validates_calculates_and_persists(db: Session) -> None
     extractor = Mock(return_value=candidate)
     service = ContractService(db, extractor=extractor)
 
-    contract = service.process_contract("Commercial lease text")
+    record = service.process_contract("Commercial lease text")
+    contract = ContractResponse.model_validate(record)
 
     extractor.assert_called_once_with("Commercial lease text")
     assert contract.currency == "AED"

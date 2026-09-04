@@ -4,8 +4,11 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+from openai import APITimeoutError, AuthenticationError
+from tenacity import wait_none
 
 from app import extraction
+from app.extraction import LLMResponseError, LLMUnavailableError
 from app.schemas import LLMExtractionCandidate
 
 
@@ -44,5 +47,62 @@ def test_extract_contract_rejects_missing_parsed_output(
     monkeypatch.setattr(extraction, "_create_client", lambda: client)
     monkeypatch.setattr(extraction.settings, "openai_model", "test-model")
 
-    with pytest.raises(RuntimeError, match="did not return a structured extraction"):
+    with pytest.raises(LLMResponseError, match="did not return a structured extraction"):
         extraction.extract_contract("Commercial lease text")
+
+
+def test_extract_contract_retries_transient_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    expected = LLMExtractionCandidate(lessor="Apex Holdings LLC")
+    client = Mock()
+    client.responses.parse.side_effect = [
+        APITimeoutError(request=Mock()),
+        SimpleNamespace(output_parsed=expected),
+    ]
+    monkeypatch.setattr(extraction, "_create_client", lambda: client)
+    monkeypatch.setattr(extraction.settings, "openai_model", "test-model")
+    monkeypatch.setattr(extraction.settings, "llm_max_retries", 2)
+    monkeypatch.setattr(extraction, "wait_exponential", lambda **_: wait_none())
+
+    assert extraction.extract_contract("Commercial lease text") == expected
+    assert client.responses.parse.call_count == 2
+
+
+def test_extract_contract_does_not_retry_authentication_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    response = Mock()
+    response.request = Mock()
+    response.headers = {}
+    client = Mock()
+    client.responses.parse.side_effect = AuthenticationError(
+        "Invalid API key",
+        response=response,
+        body=None,
+    )
+    monkeypatch.setattr(extraction, "_create_client", lambda: client)
+    monkeypatch.setattr(extraction.settings, "openai_model", "test-model")
+    monkeypatch.setattr(extraction.settings, "llm_max_retries", 2)
+    monkeypatch.setattr(extraction, "wait_exponential", lambda **_: wait_none())
+
+    with pytest.raises(AuthenticationError):
+        extraction.extract_contract("Commercial lease text")
+
+    client.responses.parse.assert_called_once()
+
+
+def test_extract_contract_maps_exhausted_transient_failures(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = Mock()
+    client.responses.parse.side_effect = APITimeoutError(request=Mock())
+    monkeypatch.setattr(extraction, "_create_client", lambda: client)
+    monkeypatch.setattr(extraction.settings, "openai_model", "test-model")
+    monkeypatch.setattr(extraction.settings, "llm_max_retries", 2)
+    monkeypatch.setattr(extraction, "wait_exponential", lambda **_: wait_none())
+
+    with pytest.raises(LLMUnavailableError):
+        extraction.extract_contract("Commercial lease text")
+
+    assert client.responses.parse.call_count == 3

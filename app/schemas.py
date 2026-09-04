@@ -2,7 +2,11 @@ from datetime import date
 from decimal import Decimal
 from typing import Self
 
-from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
+
+
+class ContractExtractionRequest(BaseModel):
+    text: str = Field(min_length=1)
 
 
 class LLMExtractionCandidate(BaseModel):
@@ -42,3 +46,9 @@ class ValidatedContract(BaseModel):
     @property
     def contract_duration_days(self) -> int:
         return (self.expiration_date - self.commencement_date).days
+
+
+class ContractResponse(ValidatedContract):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
