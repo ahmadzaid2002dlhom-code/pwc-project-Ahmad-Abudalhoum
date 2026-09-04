@@ -53,7 +53,7 @@ def test_expiration_before_commencement_is_rejected() -> None:
 def test_currency_is_normalized_and_validated() -> None:
     assert make_contract(currency=" eur ").currency == "EUR"
 
-    for invalid_currency in ("US", "US1", "EURO"):
+    for invalid_currency in ("US", "US1", "EURO", "ZZZ"):
         with pytest.raises(ValidationError):
             make_contract(currency=invalid_currency)
 

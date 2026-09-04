@@ -184,7 +184,7 @@ and unknown contract IDs return `404`.
 
 - Dates use their stated calendar values. Duration is
   `(expiration_date - commencement_date).days`.
-- Currency is normalized and validated as a three-letter uppercase code.
+- Currency is normalized and validated against the ISO 4217 registry.
 - All extracted fields are required before persistence; invalid candidates are
   not stored.
 - The case-study background references a financial risk metric, but the detailed

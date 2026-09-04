@@ -2,6 +2,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated, Self
 
+from iso4217 import Currency
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -43,8 +44,8 @@ class ValidatedContract(BaseModel):
     @classmethod
     def normalize_currency(cls, value: str) -> str:
         normalized = value.strip().upper()
-        if len(normalized) != 3 or not all("A" <= char <= "Z" for char in normalized):
-            raise ValueError("currency must be a three-letter code")
+        if normalized not in Currency.__members__:
+            raise ValueError("currency must be a valid ISO 4217 code")
         return normalized
 
     @model_validator(mode="after")
