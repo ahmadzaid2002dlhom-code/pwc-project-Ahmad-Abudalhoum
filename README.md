@@ -153,6 +153,12 @@ Verify the running container with:
 curl http://127.0.0.1:8000/health
 ```
 
+## Optional React frontend
+
+The separate React application is in `frontend/`. See
+[`frontend/README.md`](frontend/README.md) for its setup, environment, and run
+instructions.
+
 ## Extraction and validation boundaries
 
 The short extraction instruction tells the model to use only the supplied
