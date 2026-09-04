@@ -191,3 +191,12 @@ and unknown contract IDs return `404`.
   requirements provide no formula for such a metric. Therefore, no arbitrary
   financial-risk score was invented. The explicitly defined derived value —
   `contract_duration_days` — is implemented.
+
+## Local URLs
+
+- [Frontend](http://127.0.0.1:8000)
+- [Saved contracts](http://127.0.0.1:8000/#/contracts)
+- [Swagger API documentation](http://127.0.0.1:8000/docs)
+- [Health check](http://127.0.0.1:8000/health)
+- [Contracts API](http://127.0.0.1:8000/api/v1/contracts)
+- [Contract detail example](http://127.0.0.1:8000/api/v1/contracts/1) (requires contract ID `1`)
