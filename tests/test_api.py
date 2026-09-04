@@ -150,6 +150,20 @@ def test_get_missing_contract_returns_404(client: TestClient) -> None:
     assert response.json() == {"detail": "Contract not found"}
 
 
+def test_openapi_documents_contract_field_formats(client: TestClient) -> None:
+    document = client.get("/openapi.json").json()
+    fields = document["components"]["schemas"]["ContractResponse"]["properties"]
+
+    assert document["info"]["title"] == "Lease Contract Extraction API"
+    assert fields["lessor"]["title"] == "Lessor (Landlord)"
+    assert fields["lessee"]["title"] == "Lessee (Tenant)"
+    assert fields["commencement_date"]["format"] == "date"
+    assert fields["expiration_date"]["format"] == "date"
+    assert "decimal" in fields["monthly_rent"]["description"]
+    assert "ISO 4217" in fields["currency"]["description"]
+    assert fields["termination_notice_period_days"]["type"] == "integer"
+
+
 def test_cors_allows_local_frontend(client: TestClient) -> None:
     response = client.options(
         "/api/v1/contracts",

@@ -32,13 +32,21 @@ class LLMExtractionCandidate(BaseModel):
 
 
 class ValidatedContract(BaseModel):
-    lessor: str
-    lessee: str
-    commencement_date: date
-    expiration_date: date
-    monthly_rent: Decimal = Field(ge=0)
-    currency: str
-    termination_notice_period_days: int
+    lessor: str = Field(title="Lessor (Landlord)")
+    lessee: str = Field(title="Lessee (Tenant)")
+    commencement_date: date = Field(
+        description="ISO 8601 date in YYYY-MM-DD format."
+    )
+    expiration_date: date = Field(description="ISO 8601 date in YYYY-MM-DD format.")
+    monthly_rent: Decimal = Field(
+        ge=0,
+        description="Non-negative float or decimal monetary amount.",
+    )
+    currency: str = Field(description="Three-letter ISO 4217 code, such as USD or AED.")
+    termination_notice_period_days: int = Field(
+        title="Termination Notice Period",
+        description="Integer notice period in days.",
+    )
 
     @field_validator("currency")
     @classmethod
