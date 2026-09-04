@@ -3,7 +3,12 @@ const API_URL =
   (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 async function request(path, options) {
-  const response = await fetch(`${API_URL}${path}`, options);
+  let response;
+  try {
+    response = await fetch(`${API_URL}${path}`, options);
+  } catch {
+    throw new Error("Unable to connect to the API");
+  }
   const body = await response.json();
 
   if (!response.ok) {
