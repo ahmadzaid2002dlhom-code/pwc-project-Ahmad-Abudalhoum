@@ -5,7 +5,6 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.config import settings
 from app.database import Base, ContractRecord, engine, get_contract, get_db, list_contracts
 from app.extraction import LLMResponseError, LLMUnavailableError
 from app.schemas import ContractExtractionRequest, ContractResponse
@@ -19,7 +18,6 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(lifespan=lifespan)
-app.state.settings = settings
 
 
 @app.get("/health")
