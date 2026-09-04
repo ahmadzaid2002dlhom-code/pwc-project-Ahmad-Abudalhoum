@@ -121,6 +121,38 @@ Successful requests return `201 Created`:
 Stored contracts are available from `GET /api/v1/contracts` and
 `GET /api/v1/contracts/{id}`.
 
+## Docker (bonus)
+
+Build the backend image:
+
+```bash
+docker build -t lease-contract-api .
+```
+
+Run it on port 8000 using the same environment variables documented above:
+
+```bash
+docker run --rm -p 8000:8000 --env-file .env lease-contract-api
+```
+
+The `.env` file is excluded from the image and supplied only at runtime. To
+persist SQLite data after the container is removed, use a named volume and
+override the database path:
+
+```bash
+docker volume create lease-contract-data
+docker run --rm -p 8000:8000 --env-file .env \
+  -e DATABASE_URL=sqlite:////data/app.db \
+  -v lease-contract-data:/data \
+  lease-contract-api
+```
+
+Verify the running container with:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
 ## Extraction and validation boundaries
 
 The short extraction instruction tells the model to use only the supplied
