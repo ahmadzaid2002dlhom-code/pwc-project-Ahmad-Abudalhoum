@@ -3,6 +3,9 @@ __pycache__/
 .venv/
 venv/
 .env
+*.db
+*.sqlite
+*.sqlite3
 .pytest_cache/
 .ruff_cache/
 .coverage
