@@ -1,8 +1,10 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
@@ -81,3 +83,8 @@ def get_contract_by_id(
             detail="Contract not found",
         )
     return contract
+
+
+frontend_directory = Path("frontend/dist")
+if frontend_directory.is_dir():
+    app.mount("/", StaticFiles(directory=frontend_directory, html=True), name="frontend")

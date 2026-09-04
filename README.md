@@ -123,7 +123,7 @@ Stored contracts are available from `GET /api/v1/contracts` and
 
 ## Docker (bonus)
 
-Build the backend image:
+Build the API and React frontend as one image:
 
 ```bash
 docker build -t lease-contract-api .
@@ -152,6 +152,9 @@ Verify the running container with:
 ```bash
 curl http://127.0.0.1:8000/health
 ```
+
+Open `http://127.0.0.1:8000` to use the frontend. The Docker build compiles the
+React application and FastAPI serves the generated static files.
 
 ## Optional React frontend
 

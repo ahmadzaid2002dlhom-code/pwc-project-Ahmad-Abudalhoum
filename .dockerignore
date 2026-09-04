@@ -3,5 +3,7 @@
 .pytest_cache
 .venv
 __pycache__
+frontend/dist
+frontend/node_modules
 *.db
 *.py[cod]
