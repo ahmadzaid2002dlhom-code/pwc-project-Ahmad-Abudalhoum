@@ -70,7 +70,7 @@ Configuration is loaded from environment variables or `.env`:
 | Variable | Purpose |
 | --- | --- |
 | `OPENAI_API_KEY` | OpenAI API credential; required for live extraction |
-| `OPENAI_MODEL` | An available model that supports Structured Outputs |
+| `OPENAI_MODEL` | A Structured Outputs model; the example uses `gpt-4o-mini` |
 | `DATABASE_URL` | SQLAlchemy URL; defaults to `sqlite:///./app.db` |
 | `LLM_MAX_RETRIES` | Transient retries after the initial request; defaults to `3` |
 | `LLM_TIMEOUT_SECONDS` | OpenAI request timeout; defaults to `30` |

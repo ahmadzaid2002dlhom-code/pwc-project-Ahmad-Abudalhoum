@@ -7,6 +7,7 @@ from openai import (
     OpenAI,
     RateLimitError,
 )
+from pydantic import ValidationError
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from app.config import settings
@@ -29,6 +30,7 @@ MALFORMED_RESPONSE_ERRORS = (
     APIResponseValidationError,
     ContentFilterFinishReasonError,
     LengthFinishReasonError,
+    ValidationError,
 )
 
 
@@ -67,6 +69,7 @@ def extract_contract(raw_text: str) -> LLMExtractionCandidate:
                     model=settings.openai_model,
                     instructions=SYSTEM_INSTRUCTION,
                     input=raw_text,
+                    max_output_tokens=2048,
                     text_format=LLMExtractionCandidate,
                 )
     except TRANSIENT_OPENAI_ERRORS as exc:

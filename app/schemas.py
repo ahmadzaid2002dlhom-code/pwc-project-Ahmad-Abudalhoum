@@ -1,8 +1,16 @@
 from datetime import date
 from decimal import Decimal
-from typing import Self
+from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    WithJsonSchema,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 
 class ContractExtractionRequest(BaseModel):
@@ -14,7 +22,10 @@ class LLMExtractionCandidate(BaseModel):
     lessee: str | None = None
     commencement_date: date | None = None
     expiration_date: date | None = None
-    monthly_rent: Decimal | None = None
+    monthly_rent: Annotated[
+        Decimal | None,
+        WithJsonSchema({"anyOf": [{"type": "number"}, {"type": "null"}]}),
+    ] = None
     currency: str | None = None
     termination_notice_period_days: int | None = None
 

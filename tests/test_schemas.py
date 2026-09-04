@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from app.schemas import ValidatedContract
+from app.schemas import LLMExtractionCandidate, ValidatedContract
 
 
 def make_contract(**overrides: object) -> ValidatedContract:
@@ -26,6 +26,18 @@ def test_valid_contract() -> None:
 
     assert contract.lessor == "Northwind Properties"
     assert contract.monthly_rent == Decimal("1250.00")
+
+
+def test_llm_rent_schema_uses_a_json_number() -> None:
+    schema = LLMExtractionCandidate.model_json_schema()
+
+    assert schema["properties"]["monthly_rent"]["anyOf"] == [
+        {"type": "number"},
+        {"type": "null"},
+    ]
+    assert LLMExtractionCandidate.model_validate_json(
+        '{"monthly_rent": 12500.00}'
+    ).monthly_rent == Decimal("12500.00")
 
 
 def test_negative_monthly_rent_is_rejected() -> None:
